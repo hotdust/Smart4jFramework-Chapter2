@@ -1,5 +1,6 @@
 package org.smart4j.chapter2.service;
 
+import org.smart4j.chapter2.helper.DatabaseHelper;
 import org.smart4j.chapter2.model.Customer;
 import org.smart4j.chapter2.util.PropsUtil;
 
@@ -30,37 +31,20 @@ public class CustomerService {
             Class.forName(DRIVER);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
 
     public List<Customer> getCustomerList(String keyword) {
-        Connection conn = null;
+        Connection conn = DatabaseHelper.getConnection();
         List<Customer> customerList = new ArrayList<Customer>();
         try {
             String sql = "select * from customer";
-            conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Customer customer = new Customer();
-                customer.setId(rs.getLong("id"));
-                customer.setName(rs.getString("name"));
-                customerList.add(customer);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return DatabaseHelper.queryEntityList(Customer.class, sql, conn);
         } finally {
-            if (conn == null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            DatabaseHelper.closeConnection(conn);
         }
-
-        return customerList;
     }
 
     public Customer getCustomer(long id) {
