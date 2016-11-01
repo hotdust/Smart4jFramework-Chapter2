@@ -1,15 +1,15 @@
 package org.smart4j.chapter2.test;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.smart4j.chapter2.helper.DatabaseHelper;
 import org.smart4j.chapter2.model.Customer;
 import org.smart4j.chapter2.service.CustomerService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.sun.xml.internal.ws.dump.LoggingDumpTube.Position.Before;
 
 /**
  * @Author shijiapeng
@@ -24,72 +24,45 @@ public class CustomerServiceTest {
         customerService = new CustomerService();
     }
 
-//    @Before
-//    public void init() {
-//        // TODO: 2016/11/1 初始化数据库
-//
-//    }
+    @Before
+    public void init() throws Exception {
+        DatabaseHelper.executeSqlFile("sql/customer_init.sql");
+    }
 
-
-    /**
-     *
-     * Method: getCustomerList(String keyword)
-     *
-     */
     @Test
-    public void testGetCustomerList() throws Exception {
-        List<Customer> customerList = customerService.getCustomerList("");
+    public void getCustomerListTest() throws Exception {
+        List<Customer> customerList = customerService.getCustomerList();
         Assert.assertEquals(2, customerList.size());
     }
 
-    /**
-     *
-     * Method: getCustomer(long id)
-     *
-     */
     @Test
-    public void testGetCustomer() throws Exception {
+    public void getCustomerTest() throws Exception {
         long id = 1;
         Customer customer = customerService.getCustomer(id);
         Assert.assertNotNull(customer);
     }
 
-    /**
-     *
-     * Method: createCustomer(Map<String, Objects> fieldMap)
-     *
-     */
     @Test
-    public void testCreateCustomer() throws Exception {
-        Customer insertCustomer = new Customer();
-        insertCustomer.setContact("john");
-        insertCustomer.setName("customer100");
-        insertCustomer.setTelephone("12345678901");
-        boolean result = customerService.createCustomer(insertCustomer);
+    public void createCustomerTest() throws Exception {
+        Map<String, Object> fieldMap = new HashMap<String, Object>();
+        fieldMap.put("name", "customer100");
+        fieldMap.put("contact", "John");
+        fieldMap.put("telephone", "13512345678");
+        boolean result = customerService.createCustomer(fieldMap);
         Assert.assertTrue(result);
     }
 
-    /**
-     *
-     * Method: updateCustomer(long id, Map<String, Object> fieldMap)
-     *
-     */
     @Test
-    public void testUpdateCustomer() throws Exception {
+    public void updateCustomerTest() throws Exception {
         long id = 1;
-        Customer updateCustomer = new Customer();
-        updateCustomer.setContact("Eric");
-        boolean result = customerService.updateCustomer(id, updateCustomer);
+        Map<String, Object> fieldMap = new HashMap<String, Object>();
+        fieldMap.put("contact", "Eric");
+        boolean result = customerService.updateCustomer(id, fieldMap);
         Assert.assertTrue(result);
     }
 
-    /**
-     *
-     * Method: deleteCustomer(long id)
-     *
-     */
     @Test
-    public void testDeleteCustomer() throws Exception {
+    public void deleteCustomerTest() throws Exception {
         long id = 1;
         boolean result = customerService.deleteCustomer(id);
         Assert.assertTrue(result);
